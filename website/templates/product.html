@@ -1,0 +1,16 @@
+<!-- templates/product.html -->
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <h1>{{ product.name }}</h1>
+    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+    <p>{{ product.description }}</p>
+    <p>${{ product.price }}</p>
+
+    <form action="{{ url_for('cart') }}" method="POST">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="number" name="quantity" value="1" min="1">
+        <button type="submit">Add to Cart</button>
+    </form>
+</body>
+</html>
