@@ -1,16 +1,3 @@
-# main.py
-from flask import Flask, render_template, request, redirect, url_for, session
-from website.models import db, Product, Order
-from website.config import STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY, SQLALCHEMY_DATABASE_URI
-
-import stripe
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-app.config['SECRET_KEY'] = 'mysecretkey'
-db.init_app(app)
-
-stripe.api_key = STRIPE_SECRET_KEY
 
 
 @app.route('/product/<int:product_id>')
@@ -54,17 +41,3 @@ def checkout():
         return redirect(checkout_session.url, code=303)
     except Exception as e:
         return str(e)
-    
-
-
-from main import db, app
-
-with app.app_context():
-    db.create_all()
-    from website.models import Product
-    product = Product(name='Sample Product', price=29.99, description='A great product', image_url='https://via.placeholder.com/150')
-    db.session.add(product)
-    db.session.commit()
-
-if __name__ == '__main__':
-    app.run(debug=True)

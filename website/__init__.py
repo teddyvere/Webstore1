@@ -1,7 +1,15 @@
-# config.py
+
+from flask import Flask, app
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+from sqlalchemy import text
 import os
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'mysecretkey')
+load_dotenv()
+
+db = SQLAlchemy()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 SQLALCHEMY_DATABASE_URI = 'sqlite:///store.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
