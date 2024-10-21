@@ -1,32 +1,36 @@
-from flask import Blueprint, app, jsonify, redirect, render_template, request, flash, url_for
+from flask import Blueprint, jsonify, redirect, render_template, request, flash, url_for
 import stripe
 from website.models import Order, Product
 from . import db
 
+# Create a Blueprint instance
 routes = Blueprint('routes', __name__)
 
-@app.route('/product/<int:product_id>')
-def product_detail(product_id):
-    product = Product.query.get(product_id)
-    return render_template('product.html', product=product)
+@routes.route('/product/<int:product_id>')
+def product_view(product_id):
+    return f"Product ID: {product_id}"
 
-@app.route('/cart', methods=['GET', 'POST'])
+@routes.route('/cart', methods=['GET', 'POST'])
 def cart():
     if request.method == 'POST':
         product_id = request.form.get('product_id')
         quantity = int(request.form.get('quantity'))
+        
+        # Create a new order and add it to the database
         order = Order(product_id=product_id, quantity=quantity)
         db.session.add(order)
         db.session.commit()
-        return redirect(url_for('cart'))
+        
+        flash("Product added to cart successfully!", "success")
+        return redirect(url_for('routes.cart'))
 
     orders = Order.query.all()
     return render_template('cart.html', orders=orders)
 
-@app.route('/checkout', methods=['POST'])
+@routes.route('/checkout', methods=['POST'])
 def checkout():
-    # Create a Stripe checkout session
     try:
+        # Create a Stripe checkout session
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
@@ -40,9 +44,10 @@ def checkout():
                 'quantity': 1,
             }],
             mode='payment',
-            success_url=url_for('home', _external=True),
-            cancel_url=url_for('cart', _external=True),
+            success_url=url_for('routes.home', _external=True),
+            cancel_url=url_for('routes.cart', _external=True),
         )
         return redirect(checkout_session.url, code=303)
     except Exception as e:
-        return str(e)
+        flash(f"An error occurred: {str(e)}", "danger")
+        return redirect(url_for('routes.cart'))
