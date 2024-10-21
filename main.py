@@ -1,10 +1,15 @@
+from flask import app
 from website.models import db, Product, Order
 
+app = create_app
 
 
-from main import db, app
+
 
 with app.app_context():
+    
+    from website import db, create_app
+    
     db.create_all()
     from website.models import Product
     product = Product(name='Sample Product', price=29.99, description='A great product', image_url='https://via.placeholder.com/150')

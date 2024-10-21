@@ -19,7 +19,8 @@ def create_app():
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1)
+    database_url = os.environ.get('DATABASE_URL', 'sqlite:///default.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['STRIPE_PUBLIC_KEY'] = 'your_public_key'
     app.config['STRIPE_SECRET_KEY'] = 'your_secret_key'
